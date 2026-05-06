@@ -7,7 +7,7 @@ Usage: python encrypt_shellcode.py <input_file> <key>
 import sys
 
 def read_shellcode(filename):
-    """Read shellcode from file (supports raw binary or \x format)"""
+    """Read shellcode from file (supports raw binary or hex format)"""
     with open(filename, 'r') as f:
         content = f.read().strip()
     
